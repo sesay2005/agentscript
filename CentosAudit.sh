@@ -102,9 +102,23 @@ echo -e "\nThe linux flavor running on this server is $(hostnamectl | awk -F"Ope
 echo -e "\nCheck what is the ip address of the server\n"  >> /var/log/centos7audit-$(date +%F)
 echo -e "\nThe ip address of the server is $(hostname -I | awk -F" " '{print $1}')  >> /var/log/centos7audit-$(date +%F)
 
-##Check if there is a DNS entry in the /etc/resolv.conf file with 8.8.8.8
-echo -e "\nCheck if there is a DNS entry in the /etc/resolv.conf file with 8.8.8.8\n"  >> /var/log/centos7audit-$(date +%F)
-echo -e "\nThe DNS entry in the /etc/resolv.conf is $(grep nameserver /etc/resolv.conf)  >> /var/log/centos7audit-$(date +%F)
+
+##Check if there is a dns entry in the /etc/resolv.conf file with 8.8.8.8
+
+echo -e "\nCheck if there is a dns entry in the /etc/resolv.conf file with 8.8.8.8\n" >> /var/log/centos7audit-$(date +%F)
+
+grep 8.8.8.8 /etc/resolv.conf >/dev/null 2>&1
+
+if
+ [ $? -eq 0 ]
+then
+echo "8.8.8.8 exist in the /etc/resolv.conf"  >> /var/log/centos7audit-$(date +%F)
+
+else
+echo "8.8.8.8 does not exist in the /etc/resolv.conf"  >> /var/log/centos7audit-$(date +%F)
+
+fi
+
 
 ## Check the total size of the memory
 
@@ -115,5 +129,17 @@ if
  echo -e "\nThe memory size is check\n" >> /var/log/centos7audit-$(date +%F)
 else
  echo -e "\nThe memory size is not check\n" >> /var/log/centos7audit-$(date +%F)
+fi
+
+##Check if the sudo tool has any logfile configured
+
+grep sudo.log /etc/sudoers | awk -F" " '{print $4}' >/dev/null 2>&1
+
+if
+ [ $? -eq 0 ] ; then
+echo -e "\nSudo tool has logfile configured\n" >> /var/log/centos7audit-$(date +%F)
+
+else
+echo -e "\nSudo tool does not have logfile configured" >> /var/log/centos7audit-$(date +%F)
 fi
 
