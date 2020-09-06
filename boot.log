@@ -1,0 +1,26 @@
+#!/bin/bash
+#Date:Sep-03-2020
+#Author:Aruna Bakarr Sesay
+#Discription:Script to delete old log messages
+
+echo "\n*****Script to delete old log messages*****\n"
+
+prev_count=0
+fpath=/var/log/boot.log
+find $fpath -type f -mtime +15  -exec ls -ltrd {} \; > /tmp/file.out
+find $fpath -type f -mtime +15  -exec rm -rf {} \;
+count=$(cat /tmp/file.out | wc -l)
+if [ "$prev_count" -lt "$count" ] ; then
+
+MESSAGE="/tmp/file1.out"
+TO="bakarr_sesay@yahoo.com"
+echo "Log files are deleted older than 14 days"  >> $MESSAGE
+echo "+--------------------------------------------- +" >> $MESSAGE
+echo "" >> $MESSAGE
+cat /tmp/file.out | awk '{print $6,$7,$9}' >> $MESSAGE
+echo "" >> $MESSAGE
+SUBJECT="WARNING: Log files are deleted older than 14 days $(date)"
+mail -s "$SUBJECT" "$TO" < $MESSAGE
+rm $MESSAGE /tmp/file.out
+fi
+
